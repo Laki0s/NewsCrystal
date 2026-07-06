@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔮 NewsCrystal
+# NewsCrystal
 
 **A fast tech-news scraper and aggregator, written in [Crystal](https://crystal-lang.org).**
 
@@ -10,7 +10,6 @@ queryable through a REST API, and subscribable via RSS.
 [![CI](https://github.com/Laki0s/NewsCrystal/actions/workflows/ci.yml/badge.svg)](https://github.com/Laki0s/NewsCrystal/actions/workflows/ci.yml)
 [![Valgrind](https://github.com/Laki0s/NewsCrystal/actions/workflows/valgrind.yml/badge.svg)](https://github.com/Laki0s/NewsCrystal/actions/workflows/valgrind.yml)
 [![Crystal](https://img.shields.io/badge/crystal-%3E%3D1.10-black?logo=crystal)](https://crystal-lang.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 </div>
 
