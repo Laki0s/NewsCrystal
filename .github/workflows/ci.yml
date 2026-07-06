@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+# Cancel previous runs still in progress on the same branch / PR
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: Format
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crystal version
+        run: crystal --version
+      - name: Check formatting
+        run: crystal tool format --check
+
+  lint:
+    name: Lint (Ameba)
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: shards install --frozen
+      - name: Ameba
+        run: ./bin/ameba
+
+  build:
+    name: Build
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: shards install --frozen
+      - name: Build (release)
+        run: shards build --release --no-debug
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: news_crystal-binary
+          path: bin/
+          retention-days: 7
+
+  spec:
+    name: Tests (specs)
+    runs-on: [self-hosted, linux]
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: shards install --frozen
+      - name: Run specs
+        run: crystal spec --order random --error-trace
