@@ -1,0 +1,84 @@
+name: "🐛 Bug report"
+description: "Report a malfunction (broken scraper, API error, crash, etc.)"
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report.
+        The more precise it is, the faster it can be fixed.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem description
+      description: Clearly describe what is not working.
+      placeholder: The Hacker News scraper no longer retrieves authors since...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      description: Which part of the project is impacted?
+      options:
+        - Scraper (Hacker News)
+        - Scraper (Dev.to)
+        - Scraper (Lobsters)
+        - Storage / SQLite
+        - Scheduler (fibers)
+        - REST API (Kemal)
+        - Web interface
+        - RSS/Atom feed
+        - Deployment / Docker
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How can the bug be reproduced?
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: The title, link, author and date should be extracted.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: The author is empty / an exception is raised.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / error message
+      description: Paste the relevant stack trace or logs here (auto-formatted).
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS:
+        - Crystal version (`crystal --version`):
+        - Project version / commit:
+    validations:
+      required: false
