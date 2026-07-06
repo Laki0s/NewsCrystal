@@ -1,9 +1,9 @@
 # Allow the Blank issue in addition to the templates above
 blank_issues_enabled: true
 contact_links:
-  - name: 💬 Question / Discussion
+  - name: Question / Discussion
     url: https://github.com/Laki0s/NewsCrystal/discussions
     about: For open-ended questions, prefer Discussions over an issue.
-  - name: 📖 Crystal documentation
+  - name: Crystal documentation
     url: https://crystal-lang.org/reference/
     about: Reference for the Crystal language and its shards ecosystem.

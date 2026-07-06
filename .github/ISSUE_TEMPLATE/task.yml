@@ -1,4 +1,4 @@
-name: "📋 Task / User Story"
+name: "Task / User Story"
 description: "Development task tied to a User Story from the specification"
 title: "[Task]: "
 labels: ["task"]

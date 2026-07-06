@@ -1,4 +1,4 @@
-name: "🐛 Bug report"
+name: "Bug report"
 description: "Report a malfunction (broken scraper, API error, crash, etc.)"
 title: "[Bug]: "
 labels: ["bug", "triage"]
