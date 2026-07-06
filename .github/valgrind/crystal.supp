@@ -1,0 +1,56 @@
+# Valgrind suppressions for Crystal programs.
+#
+# Crystal uses the conservative Boehm-Demers-Weiser garbage collector (libgc).
+# This GC deliberately keeps memory blocks around and scans the stack
+# conservatively, which Valgrind wrongly reports as leaks or reads of
+# uninitialized memory. These rules filter out that known noise so that only
+# REAL memory issues in the application code make the job fail.
+#
+# If a new false positive appears, run the job with --gen-suppressions=all
+# (already enabled in the workflow) and add the generated block here.
+
+{
+   boehm_gc_allocation_reachable
+   Memcheck:Leak
+   ...
+   fun:GC_*
+}
+
+{
+   boehm_gc_malloc
+   Memcheck:Leak
+   ...
+   fun:GC_malloc*
+}
+
+{
+   boehm_gc_generic_malloc
+   Memcheck:Leak
+   ...
+   fun:GC_generic_malloc*
+}
+
+{
+   boehm_gc_conservative_stack_scan_value8
+   Memcheck:Value8
+   fun:GC_*
+}
+
+{
+   boehm_gc_conservative_stack_scan_cond
+   Memcheck:Cond
+   fun:GC_*
+}
+
+{
+   boehm_gc_mark_from
+   Memcheck:Addr8
+   fun:GC_mark_from
+}
+
+{
+   crystal_main_reachable
+   Memcheck:Leak
+   ...
+   fun:__crystal_main
+}
