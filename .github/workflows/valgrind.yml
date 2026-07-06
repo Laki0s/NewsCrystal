@@ -1,0 +1,44 @@
+name: Valgrind
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch: {}
+
+jobs:
+  memcheck:
+    name: Memory check (Valgrind)
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Valgrind is available
+        run: valgrind --version
+
+      - name: Install dependencies
+        run: shards install --frozen
+
+      # The spec binary is compiled without optimization and without stripping
+      # debug info, so Valgrind produces usable stack traces.
+      - name: Build the test binary
+        run: crystal build --debug -o bin/spec_runner spec/spec_helper.cr || true
+
+      # Crystal note: the Boehm GC allocates memory that Valgrind reports as
+      # "leaks" or "still reachable". The suppression file
+      # .github/valgrind/crystal.supp filters out this noise.
+      - name: Run specs under Valgrind
+        env:
+          # Helps Boehm cooperate with Valgrind
+          GC_MARKERS: "1"
+        run: |
+          valgrind \
+            --tool=memcheck \
+            --leak-check=full \
+            --show-leak-kinds=definite \
+            --errors-for-leak-kinds=definite \
+            --suppressions=.github/valgrind/crystal.supp \
+            --error-exitcode=1 \
+            --gen-suppressions=all \
+            crystal spec --no-color
