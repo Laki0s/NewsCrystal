@@ -1,0 +1,50 @@
+name: "📋 Task / User Story"
+description: "Development task tied to a User Story from the specification"
+title: "[Task]: "
+labels: ["task"]
+body:
+  - type: dropdown
+    id: user_story
+    attributes:
+      label: Related User Story
+      description: Which User Story from the specification does this task relate to?
+      options:
+        - "US1 — Project / Crystal environment setup"
+        - "US2 — Hacker News scraper"
+        - "US3 — Storage and deduplication (SQLite)"
+        - "US4 — Additional sources (Dev.to, Lobsters)"
+        - "US5 — Automatic scraping scheduling"
+        - "US6 — REST API (Kemal)"
+        - "US7 — Web browsing interface"
+        - "US8 — RSS/Atom export"
+        - "US9 — Robustness and error handling"
+        - "US10 — Deployment and documentation"
+        - "Cross-cutting / other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What needs to be built?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Conditions that must be met for the task to be considered done.
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Shards, affected files, points of attention.
