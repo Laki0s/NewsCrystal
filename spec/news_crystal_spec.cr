@@ -14,13 +14,13 @@ describe NewsCrystal::Storage::Article do
       url: "https://example.com/hello",
       source: "hackernews",
       published_at: published,
-      hash: "abc123",
+      url_hash: "abc123",
     )
 
     article.title.should eq("Hello Crystal")
     article.url.should eq("https://example.com/hello")
     article.source.should eq("hackernews")
     article.published_at.should eq(published)
-    article.hash.should eq("abc123")
+    article.url_hash.should eq("abc123")
   end
 end
