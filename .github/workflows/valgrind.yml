@@ -7,37 +7,37 @@ on:
     branches: ["main", "develop"]
   workflow_dispatch: {}
 
+# Valgrind does not exist on macOS (Apple Silicon), so the memory check runs
+# inside a Linux container launched via `docker run` from a step. A job-level
+# `container:` is not allowed on macOS runners, but the Docker CLI is.
 jobs:
   memcheck:
     name: Memory check (Valgrind)
     runs-on: self-hosted
-    container: crystallang/crystal:latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install system dependencies (Valgrind, SQLite)
-        run: apt-get update && apt-get install -y valgrind libsqlite3-dev
-
-      - name: Check Valgrind is available
-        run: valgrind --version
-
-      - name: Install dependencies
-        run: shards install --frozen
-
-      # Crystal note: the Boehm GC allocates memory that Valgrind reports as
-      # "leaks" or "still reachable". The suppression file
-      # .github/valgrind/crystal.supp filters out this noise.
-      - name: Run specs under Valgrind
-        env:
-          # Helps Boehm cooperate with Valgrind
-          GC_MARKERS: "1"
+      # The workspace is mounted read-only and copied to /build inside the
+      # container, so nothing (root-owned lib/, bin/) is written back to the
+      # host runner. The Boehm GC noise is filtered by the suppressions file.
+      - name: Run specs under Valgrind (Linux container)
         run: |
-          valgrind \
-            --tool=memcheck \
-            --leak-check=full \
-            --show-leak-kinds=definite \
-            --errors-for-leak-kinds=definite \
-            --suppressions=.github/valgrind/crystal.supp \
-            --error-exitcode=1 \
-            --gen-suppressions=all \
-            crystal spec --no-color
+          docker run --rm \
+            -v "$PWD:/src:ro" \
+            -e GC_MARKERS=1 \
+            84codes/crystal:latest \
+            bash -c '
+              set -e
+              cp -r /src /build && cd /build
+              apt-get update && apt-get install -y --no-install-recommends valgrind libsqlite3-dev
+              shards install --frozen
+              valgrind \
+                --tool=memcheck \
+                --leak-check=full \
+                --show-leak-kinds=definite \
+                --errors-for-leak-kinds=definite \
+                --suppressions=.github/valgrind/crystal.supp \
+                --error-exitcode=1 \
+                --gen-suppressions=all \
+                crystal spec --no-color
+            '
