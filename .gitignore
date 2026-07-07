@@ -16,3 +16,6 @@
 
 # OS / editor
 .DS_Store
+
+# Self-hosted GitHub Actions runner (registered locally, must never be committed)
+/actions-runner/

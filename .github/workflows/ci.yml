@@ -14,7 +14,8 @@ concurrency:
 jobs:
   format:
     name: Format
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    container: crystallang/crystal:latest
     steps:
       - uses: actions/checkout@v4
       - name: Crystal version
@@ -24,9 +25,12 @@ jobs:
 
   lint:
     name: Lint (Ameba)
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    container: crystallang/crystal:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: apt-get update && apt-get install -y libsqlite3-dev
       - name: Install dependencies
         run: shards install --frozen
       - name: Ameba
@@ -34,9 +38,12 @@ jobs:
 
   build:
     name: Build
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    container: crystallang/crystal:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: apt-get update && apt-get install -y libsqlite3-dev
       - name: Install dependencies
         run: shards install --frozen
       - name: Build (release)
@@ -50,10 +57,13 @@ jobs:
 
   spec:
     name: Tests (specs)
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    container: crystallang/crystal:latest
     needs: build
     steps:
       - uses: actions/checkout@v4
+      - name: Install system dependencies
+        run: apt-get update && apt-get install -y libsqlite3-dev
       - name: Install dependencies
         run: shards install --frozen
       - name: Run specs

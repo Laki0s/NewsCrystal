@@ -10,20 +10,19 @@ on:
 jobs:
   memcheck:
     name: Memory check (Valgrind)
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
+    container: crystallang/crystal:latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install system dependencies (Valgrind, SQLite)
+        run: apt-get update && apt-get install -y valgrind libsqlite3-dev
 
       - name: Check Valgrind is available
         run: valgrind --version
 
       - name: Install dependencies
         run: shards install --frozen
-
-      # The spec binary is compiled without optimization and without stripping
-      # debug info, so Valgrind produces usable stack traces.
-      - name: Build the test binary
-        run: crystal build --debug -o bin/spec_runner spec/spec_helper.cr || true
 
       # Crystal note: the Boehm GC allocates memory that Valgrind reports as
       # "leaks" or "still reachable". The suppression file
