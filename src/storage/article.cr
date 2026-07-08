@@ -10,6 +10,7 @@ module NewsCrystal
       getter title : String
       getter url : String
       getter source : String
+      getter author : String
       getter published_at : Time
       getter url_hash : String
 
@@ -17,6 +18,7 @@ module NewsCrystal
         @title : String,
         @url : String,
         @source : String,
+        @author : String,
         @published_at : Time,
         @url_hash : String,
       )

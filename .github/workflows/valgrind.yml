@@ -39,10 +39,12 @@ jobs:
               apt-get install -y -qq --no-install-recommends valgrind libsqlite3-dev
               shards install --frozen
 
-              # Aggregate every *_spec.cr into a single entry so Valgrind covers
-              # all specs, present and future, without editing this workflow.
-              for f in spec/*_spec.cr; do
-                echo "require \"./$(basename ${f%.cr})\""
+              # Aggregate every *_spec.cr (including nested dirs) into a single
+              # entry so Valgrind covers all specs, present and future, without
+              # editing this workflow.
+              find spec -name "*_spec.cr" | sort | while read -r f; do
+                rel="${f#spec/}"
+                echo "require \"./${rel%.cr}\""
               done > spec/valgrind_entry.cr
 
               crystal build spec/valgrind_entry.cr -o /build/spec_runner
