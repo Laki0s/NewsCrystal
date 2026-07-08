@@ -20,7 +20,7 @@ module NewsCrystal
         @source : String,
         @author : String,
         @published_at : Time,
-        @url_hash : String
+        @url_hash : String,
       )
       end
     end
