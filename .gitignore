@@ -1,0 +1,21 @@
+# Crystal
+/docs/
+/lib/
+/bin/
+/.shards/
+*.dwarf
+
+# Environment / secrets
+.env
+.env.*
+
+# SQLite databases
+*.db
+*.db-journal
+*.sqlite3
+
+# OS / editor
+.DS_Store
+
+# Self-hosted GitHub Actions runner (registered locally, must never be committed)
+/actions-runner/

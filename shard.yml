@@ -1,0 +1,34 @@
+name: news_crystal
+version: 0.1.0
+
+authors:
+  - Laki0s
+
+description: |
+  Tech news scraper and aggregator written in Crystal. Collects articles from
+  several sources (Hacker News, Dev.to, Lobsters) into a single feed exposed
+  through a REST API, a web interface and an RSS/Atom feed.
+
+targets:
+  news_crystal:
+    main: src/news_crystal.cr
+
+crystal: ">= 1.10.0"
+
+license: MIT
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+    version: ~> 1.6
+  lexbor:
+    github: kostya/lexbor
+    version: ~> 3.6
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+    version: ~> 0.23
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.6

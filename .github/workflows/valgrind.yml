@@ -7,38 +7,53 @@ on:
     branches: ["main", "develop"]
   workflow_dispatch: {}
 
+# Valgrind does not exist on macOS (Apple Silicon), so the memory check runs
+# inside a Linux container launched via `docker run` from a step. A job-level
+# `container:` is not allowed on macOS runners, but the Docker CLI is.
+#
+# Two important details:
+#   1. We compile the spec binary FIRST, then run Valgrind on that binary only.
+#      Running `valgrind crystal spec` would instrument the Crystal compiler +
+#      LLVM (thousands of false positives), not our program.
+#   2. `--undef-value-errors=no` disables the "uninitialised value" checks,
+#      which are inherent noise from Crystal's conservative Boehm GC. We still
+#      fail the job on any *definite* memory leak in our own code.
 jobs:
   memcheck:
     name: Memory check (Valgrind)
-    runs-on: [self-hosted, linux]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check Valgrind is available
-        run: valgrind --version
-
-      - name: Install dependencies
-        run: shards install --frozen
-
-      # The spec binary is compiled without optimization and without stripping
-      # debug info, so Valgrind produces usable stack traces.
-      - name: Build the test binary
-        run: crystal build --debug -o bin/spec_runner spec/spec_helper.cr || true
-
-      # Crystal note: the Boehm GC allocates memory that Valgrind reports as
-      # "leaks" or "still reachable". The suppression file
-      # .github/valgrind/crystal.supp filters out this noise.
-      - name: Run specs under Valgrind
-        env:
-          # Helps Boehm cooperate with Valgrind
-          GC_MARKERS: "1"
+      # The workspace is mounted read-only and copied to /build inside the
+      # container, so nothing (root-owned lib/, bin/) is written back to the host.
+      - name: Run specs under Valgrind (Linux container)
         run: |
-          valgrind \
-            --tool=memcheck \
-            --leak-check=full \
-            --show-leak-kinds=definite \
-            --errors-for-leak-kinds=definite \
-            --suppressions=.github/valgrind/crystal.supp \
-            --error-exitcode=1 \
-            --gen-suppressions=all \
-            crystal spec --no-color
+          docker run --rm \
+            -v "$PWD:/src:ro" \
+            crystallang/crystal:latest \
+            bash -c '
+              set -e
+              cp -r /src /build && cd /build
+              apt-get update -qq
+              apt-get install -y -qq --no-install-recommends valgrind libsqlite3-dev
+              shards install --frozen
+
+              # Aggregate every *_spec.cr into a single entry so Valgrind covers
+              # all specs, present and future, without editing this workflow.
+              for f in spec/*_spec.cr; do
+                echo "require \"./$(basename ${f%.cr})\""
+              done > spec/valgrind_entry.cr
+
+              crystal build spec/valgrind_entry.cr -o /build/spec_runner
+
+              valgrind \
+                --tool=memcheck \
+                --leak-check=full \
+                --show-leak-kinds=definite \
+                --errors-for-leak-kinds=definite \
+                --undef-value-errors=no \
+                --suppressions=.github/valgrind/crystal.supp \
+                --error-exitcode=1 \
+                /build/spec_runner
+            '

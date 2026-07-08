@@ -1,0 +1,11 @@
+# Ameba configuration — https://github.com/crystal-ameba/ameba
+# Run with: ./bin/ameba
+
+# Directories linted by default.
+Globs:
+  - "**/*.cr"
+  - "!lib"
+
+# Allow TODO/FIXME comments while the project is under active development.
+Documentation/DocumentationAdmonition:
+  Enabled: false
