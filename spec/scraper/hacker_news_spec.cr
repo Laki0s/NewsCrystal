@@ -34,6 +34,16 @@ describe NewsCrystal::Scraper::HackerNews do
     end
   end
 
+  it "falls back to current time when the age title is unparseable" do
+    now = Time.utc
+    html = fixture.gsub("2026-07-08T08:46:06 1783500366", "not-a-timestamp")
+    parsed = NewsCrystal::Scraper::HackerNews.new.parse(html)
+    later = Time.utc
+
+    parsed[0].published_at.should be >= now
+    parsed[0].published_at.should be <= later
+  end
+
   it "does not crash and returns no articles on empty HTML" do
     NewsCrystal::Scraper::HackerNews.new.parse("").should be_empty
   end
