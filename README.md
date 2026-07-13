@@ -170,9 +170,9 @@ Development follows the ten User Stories of the specification
 (`cahier_des_charges_NewsCrystal.pdf`), tracked in [`Issues.md`](Issues.md).
 
 - [x] **US1** — Project & Crystal environment setup
-- [ ] **US2** — Hacker News scraper
-- [ ] **US3** — Storage & deduplication (SQLite)
-- [ ] **US4** — Additional sources (Dev.to, Lobsters)
+- [x] **US2** — Hacker News scraper
+- [x] **US3** — Storage & deduplication (SQLite)
+- [] **US4** — Additional sources (Dev.to, Lobsters)
 - [ ] **US5** — Automatic scraping scheduling
 - [ ] **US6** — REST API (Kemal)
 - [ ] **US7** — Web browsing interface
