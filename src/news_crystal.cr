@@ -1,6 +1,7 @@
 require "./news_crystal/version"
 require "./storage/storage"
 require "./scraper/scraper"
+require "./scheduler/scheduler"
 require "./api/api"
 
 # NewsCrystal — tech news scraper and aggregator.
