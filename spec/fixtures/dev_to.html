@@ -1,0 +1,46 @@
+<html>
+<body>
+<div id="main-content">
+  <div class="crayons-story">
+    <div class="crayons-story__body">
+      <div class="crayons-story__top">
+        <div class="crayons-story__meta">
+          <a href="/alice" class="crayons-story__secondary">alice</a>
+          <a href="/alice/first-devto-post-123" class="crayons-story__tertiary">
+            <time datetime="2026-07-10T09:00:00Z">Jul 10</time>
+          </a>
+        </div>
+      </div>
+      <div class="crayons-story__indention">
+        <h2 class="crayons-story__title">
+          <a href="/alice/first-devto-post-123" id="article-link-123">First Dev.to Post</a>
+        </h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="crayons-story">
+    <div class="crayons-story__body">
+      <div class="crayons-story__meta">
+        <a href="/bob" class="crayons-story__secondary">bob</a>
+        <a href="/bob/second-devto-post-456" class="crayons-story__tertiary">
+          <time datetime="not-a-date">???</time>
+        </a>
+      </div>
+      <h2 class="crayons-story__title">
+        <a href="/bob/second-devto-post-456">Second Dev.to Post</a>
+      </h2>
+    </div>
+  </div>
+
+  <div class="crayons-story">
+    <!-- malformed: no title link, must be skipped -->
+    <div class="crayons-story__body">
+      <div class="crayons-story__meta">
+        <a href="/carol" class="crayons-story__secondary">carol</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
