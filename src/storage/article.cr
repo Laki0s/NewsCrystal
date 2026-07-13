@@ -7,6 +7,9 @@ module NewsCrystal
     # column of the `articles` table. The field is intentionally *not* named
     # `hash` to avoid shadowing Crystal's `Object#hash` (used by Hash/Set).
     struct Article
+      # Database row id. `nil` for a freshly scraped article that has not been
+      # read back from storage yet; set once loaded from the `articles` table.
+      getter id : Int64?
       getter title : String
       getter url : String
       getter source : String
@@ -21,6 +24,7 @@ module NewsCrystal
         @author : String,
         @published_at : Time,
         @url_hash : String,
+        @id : Int64? = nil,
       )
       end
     end
