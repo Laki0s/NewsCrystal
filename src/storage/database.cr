@@ -45,25 +45,57 @@ module NewsCrystal
         articles.count { |article| save(article) }
       end
 
-      def count : Int64
-        @db.scalar("SELECT COUNT(*) FROM articles").as(Int64)
+      # Number of stored articles, optionally restricted to one source.
+      def count(source : String? = nil) : Int64
+        if source
+          @db.scalar("SELECT COUNT(*) FROM articles WHERE source = ?", source).as(Int64)
+        else
+          @db.scalar("SELECT COUNT(*) FROM articles").as(Int64)
+        end
       end
 
       # Returns all stored articles, most recent first.
       def all : Array(Article)
-        @db.query_all(
-          "SELECT title, url, source, author, published_at, hash " \
-          "FROM articles ORDER BY published_at DESC"
-        ) do |row|
-          Article.new(
-            title: row.read(String),
-            url: row.read(String),
-            source: row.read(String),
-            author: row.read(String),
-            published_at: Time.unix(row.read(Int64)),
-            url_hash: row.read(String),
-          )
+        @db.query_all(SELECT_COLUMNS + " ORDER BY published_at DESC") do |row|
+          read_article(row)
         end
+      end
+
+      # Returns a page of articles, most recent first, optionally filtered by
+      # source. `offset`/`limit` implement pagination for the REST API (US6).
+      def page(limit : Int32, offset : Int32, source : String? = nil) : Array(Article)
+        if source
+          @db.query_all(
+            SELECT_COLUMNS + " WHERE source = ? ORDER BY published_at DESC LIMIT ? OFFSET ?",
+            source, limit, offset
+          ) { |row| read_article(row) }
+        else
+          @db.query_all(
+            SELECT_COLUMNS + " ORDER BY published_at DESC LIMIT ? OFFSET ?",
+            limit, offset
+          ) { |row| read_article(row) }
+        end
+      end
+
+      # Looks up a single article by its row id; `nil` when unknown (REST 404).
+      def find(id : Int64) : Article?
+        @db.query_one?(SELECT_COLUMNS + " WHERE id = ?", id) { |row| read_article(row) }
+      end
+
+      # Columns read back into an `Article`, in the order `read_article` expects.
+      SELECT_COLUMNS = "SELECT id, title, url, source, author, published_at, hash FROM articles"
+
+      # Builds an `Article` from a result row matching `SELECT_COLUMNS`.
+      private def read_article(row : DB::ResultSet) : Article
+        Article.new(
+          id: row.read(Int64),
+          title: row.read(String),
+          url: row.read(String),
+          source: row.read(String),
+          author: row.read(String),
+          published_at: Time.unix(row.read(Int64)),
+          url_hash: row.read(String),
+        )
       end
 
       private def self.connection_uri(path : String) : String
