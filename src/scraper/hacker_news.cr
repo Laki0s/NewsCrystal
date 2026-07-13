@@ -1,6 +1,3 @@
-require "http/client"
-require "digest/sha256"
-require "lexbor"
 require "./source"
 
 module NewsCrystal
@@ -14,23 +11,16 @@ module NewsCrystal
     class HackerNews < Source
       SOURCE_NAME = "hackernews"
       BASE_URL    = "https://news.ycombinator.com/"
-      USER_AGENT  = "NewsCrystal/#{NewsCrystal::VERSION} (+https://github.com/Laki0s/NewsCrystal)"
 
       def name : String
         SOURCE_NAME
       end
 
-      # Fetches the front page over HTTP and returns the parsed articles.
-      # Network robustness (timeouts, retries) is added in US9.
-      def fetch : Array(Storage::Article)
-        response = HTTP::Client.get(BASE_URL, headers: HTTP::Headers{"User-Agent" => USER_AGENT})
-        return [] of Storage::Article unless response.success?
-
-        parse(response.body)
+      def base_url : String
+        BASE_URL
       end
 
-      # Parses a Hacker News HTML page into articles. Kept separate from `fetch`
-      # so it can be unit-tested against a saved fixture.
+      # Parses a Hacker News HTML page into articles.
       def parse(html : String) : Array(Storage::Article)
         parser = Lexbor.new(html)
         root = parser.root
@@ -45,18 +35,11 @@ module NewsCrystal
           next unless id && link
 
           title = link.inner_text.strip
-          url = normalize_url(link.attribute_by("href"))
+          url = absolute_url(link.attribute_by("href"))
           next if title.empty? || url.empty?
 
           author, published_at = subtext[id]? || {"", Time.utc}
-          articles << Storage::Article.new(
-            title: title,
-            url: url,
-            source: SOURCE_NAME,
-            author: author,
-            published_at: published_at,
-            url_hash: Digest::SHA256.hexdigest(url),
-          )
+          articles << build_article(title, url, author, published_at)
         end
 
         articles
@@ -94,15 +77,6 @@ module NewsCrystal
         else
           Time.utc
         end
-      end
-
-      # Absolute URLs are kept as-is; relative ones (e.g. "item?id=1" for Ask HN)
-      # are resolved against the base URL.
-      private def normalize_url(href : String?) : String
-        url = href.to_s.strip
-        return url if url.empty? || url.starts_with?("http")
-
-        "#{BASE_URL}#{url}"
       end
     end
   end
