@@ -1,0 +1,51 @@
+<html>
+<body>
+<ol class="stories list">
+  <li class="story" id="story_aaa">
+    <div class="story_liner h-entry">
+      <div class="voters"></div>
+      <div class="details">
+        <span class="link h-cite">
+          <a class="u-url" href="https://example.com/lob-first">First Lobsters Story</a>
+        </span>
+        <div class="byline">
+          <span> authored by </span>
+          <a href="/~alice" class="user_is_author">alice</a>
+          <span> | </span>
+          <time title="2026-07-08 08:46:06" datetime="2026-07-08 08:46:06" data-at-unix="1783500366">3 hours ago</time>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li class="story" id="story_bbb">
+    <div class="story_liner h-entry">
+      <div class="voters"></div>
+      <div class="details">
+        <span class="link h-cite">
+          <a class="u-url" href="/s/bbb/second_text_story">Second Lobsters Text Story</a>
+        </span>
+        <div class="byline">
+          <span> authored by </span>
+          <a href="/~bob" class="user_is_author">bob</a>
+          <span> | </span>
+          <time title="broken-date" datetime="broken-date">recently</time>
+        </div>
+      </div>
+    </div>
+  </li>
+
+  <li class="story" id="story_ccc">
+    <!-- malformed: no u-url link, must be skipped -->
+    <div class="story_liner h-entry">
+      <div class="voters"></div>
+      <div class="details">
+        <div class="byline">
+          <a href="/~carol" class="user_is_author">carol</a>
+        </div>
+      </div>
+    </div>
+  </li>
+</ol>
+</body>
+</html>
